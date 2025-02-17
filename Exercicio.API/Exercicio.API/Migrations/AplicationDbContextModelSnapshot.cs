@@ -33,6 +33,10 @@ namespace Exercicio.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Link")
                         .IsRequired()
                         .HasColumnType("text");

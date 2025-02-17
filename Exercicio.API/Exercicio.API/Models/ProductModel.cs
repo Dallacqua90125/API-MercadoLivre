@@ -8,5 +8,6 @@
         public string Price { get; set; }
         public string Assessment { get; set; }
         public string Link { get; set; }
+        public string Image { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Exercicio.API.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    [Migration("20250214144304_api-migration")]
+    [Migration("20250217114611_apimigration")]
     partial class apimigration
     {
         /// <inheritdoc />
@@ -33,6 +33,10 @@ namespace Exercicio.API.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Assessment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("text");
 
