@@ -134,9 +134,8 @@ namespace Exercicio.API.Controllers
                     if (!string.IsNullOrEmpty(error))
                         return StatusCode(500, new { error = "Erro no Puppeteer", detalhes = error });
 
-                    // Processar a saída do scraper e salvar no banco de dados
+                    // Agora chamamos ProcessScraperOutput sem precisar passar o contexto
                     var products = ProcessScraperOutput(output);
-                    await SaveProductsToDatabase(products);
 
                     return Ok(new { message = "Scraping concluído com sucesso!", resultado = products });
                 }
@@ -147,6 +146,7 @@ namespace Exercicio.API.Controllers
             }
         }
 
+        // Removemos o parâmetro dbContext porque já temos o _context
         private List<ProductModel> ProcessScraperOutput(string output)
         {
             // Extrair a parte relevante do JSON (a lista de produtos)
@@ -157,21 +157,32 @@ namespace Exercicio.API.Controllers
             // Desserializar o JSON para uma lista de objetos dinâmicos
             var productsData = JsonConvert.DeserializeObject<List<dynamic>>(jsonArray);
 
-            // Mapear para o modelo ProductModel
+            // Lista para armazenar os produtos a serem adicionados
             var products = new List<ProductModel>();
+
             foreach (var productData in productsData)
             {
-                var product = new ProductModel
+                var productName = (string)productData.nome;
+                var existingProduct = _context.products.FirstOrDefault(p => p.Nome == productName);
+
+                if (existingProduct == null) // Se não existir, adicionamos
                 {
-                    Nome = productData.nome,
-                    Price = productData.preco,
-                    Assessment = productData.avaliacao,
-                    Link = productData.link,
-                    Product = productData.produto,
-                    Image = productData.image
-                };
-                products.Add(product);
+                    var product = new ProductModel
+                    {
+                        Nome = productName,
+                        Price = productData.preco,
+                        Assessment = productData.avaliacao,
+                        Link = productData.link,
+                        Product = productData.produto,
+                        Image = productData.image
+                    };
+
+                    products.Add(product);
+                    _context.products.Add(product); // Adiciona ao banco
+                }
             }
+
+            _context.SaveChanges(); // Salva as alterações no banco
 
             return products;
         }

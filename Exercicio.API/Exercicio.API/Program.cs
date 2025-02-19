@@ -16,6 +16,12 @@ builder.Services.AddDbContext<AplicationDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var supportedCultures = new[] { "pt-BR", "en-US" };
+var localizationOpions = new RequestLocalizationOptions()
+    .SetDefaultCulture("pt-BR")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -34,6 +40,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRequestLocalization(localizationOpions);
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
